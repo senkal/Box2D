@@ -1,5 +1,6 @@
 /*
 * Copyright (c) 2006-2009 Erin Catto http://www.box2d.org
+* Copyright (c) 2014 Google, Inc.
 *
 * This software is provided 'as-is', without any express or implied
 * warranty.  In no event will the authors be held liable for any damages
@@ -118,15 +119,6 @@ void b2ContactManager::Collide()
 		// Is this contact flagged for filtering?
 		if (c->m_flags & b2Contact::e_filterFlag)
 		{
-			// Should these bodies collide?
-			if (bodyB->ShouldCollide(bodyA) == false)
-			{
-				b2Contact* cNuke = c;
-				c = cNuke->GetNext();
-				Destroy(cNuke);
-				continue;
-			}
-
 			// Check user filtering.
 			if (m_contactFilter && m_contactFilter->ShouldCollide(fixtureA, fixtureB) == false)
 			{
@@ -223,12 +215,6 @@ void b2ContactManager::AddPair(void* proxyUserDataA, void* proxyUserDataB)
 		edge = edge->next;
 	}
 
-	// Does a joint override collision? Is at least one body dynamic?
-	if (bodyB->ShouldCollide(bodyA) == false)
-	{
-		return;
-	}
-
 	// Check user filtering.
 	if (m_contactFilter && m_contactFilter->ShouldCollide(fixtureA, fixtureB) == false)
 	{
@@ -245,8 +231,6 @@ void b2ContactManager::AddPair(void* proxyUserDataA, void* proxyUserDataB)
 	// Contact creation may swap fixtures.
 	fixtureA = c->GetFixtureA();
 	fixtureB = c->GetFixtureB();
-	indexA = c->GetChildIndexA();
-	indexB = c->GetChildIndexB();
 	bodyA = fixtureA->GetBody();
 	bodyB = fixtureB->GetBody();
 

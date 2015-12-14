@@ -1,5 +1,6 @@
 /*
 * Copyright (c) 2007-2009 Erin Catto http://www.box2d.org
+* Copyright (c) 2014 Google, Inc.
 *
 * This software is provided 'as-is', without any express or implied
 * warranty.  In no event will the authors be held liable for any damages
@@ -15,6 +16,8 @@
 * misrepresented as being the original software.
 * 3. This notice may not be removed or altered from any source distribution.
 */
+#include <string.h>
+#include <memory.h>
 
 #include <Box2D/Collision/b2Distance.h>
 #include <Box2D/Collision/Shapes/b2CircleShape.h>

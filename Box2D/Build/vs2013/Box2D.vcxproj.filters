@@ -19,6 +19,9 @@
     <Filter Include="Dynamics\Joints">
       <UniqueIdentifier>{CFBD1F37-CEEA-CA41-9715-5C0ACDD84298}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Particle">
+      <UniqueIdentifier>{e09a6055-1ccc-4424-80ad-eac46a0ba36d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Box2D\Box2D.h" />
@@ -157,6 +160,42 @@
     <ClInclude Include="..\..\Box2D\Dynamics\Joints\b2MotorJoint.h">
       <Filter>Dynamics\Joints</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Box2D\Particle\b2Particle.h">
+      <Filter>Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Box2D\Particle\b2ParticleAssembly.h">
+      <Filter>Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Box2D\Particle\b2ParticleGroup.h">
+      <Filter>Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Box2D\Particle\b2ParticleSystem.h">
+      <Filter>Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Box2D\Particle\b2StackQueue.h">
+      <Filter>Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Box2D\Particle\b2VoronoiDiagram.h">
+      <Filter>Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Box2D\Common\b2FreeList.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Box2D\Common\b2GrowableBuffer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Box2D\Common\b2IntrusiveList.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Box2D\Common\b2SlabAllocator.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Box2D\Common\b2Stat.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Box2D\Common\b2TrackedBlock.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Box2D\Collision\b2BroadPhase.cpp">
@@ -293,6 +332,30 @@
     </ClCompile>
     <ClCompile Include="..\..\Box2D\Dynamics\Joints\b2MotorJoint.cpp">
       <Filter>Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Box2D\Particle\b2Particle.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Box2D\Particle\b2ParticleAssembly.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Box2D\Particle\b2ParticleGroup.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Box2D\Particle\b2ParticleSystem.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Box2D\Particle\b2VoronoiDiagram.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Box2D\Common\b2FreeList.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Box2D\Common\b2Stat.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Box2D\Common\b2TrackedBlock.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
