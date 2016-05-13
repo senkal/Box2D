@@ -65,7 +65,13 @@ static void sCreateUI(GLFWwindow* window)
 
 	// Init UI
 	const char* fontPath = "Data/DroidSans.ttf";
-	ImGui::GetIO().Fonts->AddFontFromFileTTF(fontPath, 15.f);
+	FILE* fontFile = fopen(fontPath, "rb");
+	if (fontFile)
+	{
+		fclose(fontFile);
+		fontFile = NULL;
+		ImGui::GetIO().Fonts->AddFontFromFileTTF(fontPath, 15.f);
+	}
 
 	if (ImGui_ImplGlfw_Init(window, false) == false)
 	{
@@ -523,7 +529,7 @@ int main(int, char**)
 	if (test)
 	{
 		delete test;
-		test = nullptr;
+		test = NULL;
 	}
 
 	g_debugDraw.Destroy();
