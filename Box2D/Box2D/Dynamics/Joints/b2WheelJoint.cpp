@@ -141,14 +141,14 @@ void b2WheelJoint::InitVelocityConstraints(const b2SolverData& data)
 			float32 omega = 2.0f * b2_pi * m_frequencyHz;
 
 			// Damping coefficient
-			float32 d = 2.0f * m_springMass * m_dampingRatio * omega;
+			float32 damp = 2.0f * m_springMass * m_dampingRatio * omega;
 
 			// Spring stiffness
 			float32 k = m_springMass * omega * omega;
 
 			// magic formulas
 			float32 h = data.step.dt;
-			m_gamma = h * (d + h * k);
+			m_gamma = h * (damp + h * k);
 			if (m_gamma > 0.0f)
 			{
 				m_gamma = 1.0f / m_gamma;
@@ -346,7 +346,7 @@ float32 b2WheelJoint::GetReactionTorque(float32 inv_dt) const
 	return inv_dt * m_motorImpulse;
 }
 
-float32 b2WheelJoint::GetPrismaticJointTranslation() const
+float32 b2WheelJoint::GetJointTranslation() const
 {
 	b2Body* bA = m_bodyA;
 	b2Body* bB = m_bodyB;
@@ -360,7 +360,7 @@ float32 b2WheelJoint::GetPrismaticJointTranslation() const
 	return translation;
 }
 
-float32 b2WheelJoint::GetPrismaticJointSpeed() const
+float32 b2WheelJoint::GetJointLinearSpeed() const
 {
 	b2Body* bA = m_bodyA;
 	b2Body* bB = m_bodyB;
@@ -381,14 +381,14 @@ float32 b2WheelJoint::GetPrismaticJointSpeed() const
 	return speed;
 }
 
-float32 b2WheelJoint::GetRevoluteJointAngle() const
+float32 b2WheelJoint::GetJointAngle() const
 {
 	b2Body* bA = m_bodyA;
 	b2Body* bB = m_bodyB;
 	return bB->m_sweep.a - bA->m_sweep.a;
 }
 
-float32 b2WheelJoint::GetRevoluteJointSpeed() const
+float32 b2WheelJoint::GetJointAngularSpeed() const
 {
 	float32 wA = m_bodyA->m_angularVelocity;
 	float32 wB = m_bodyB->m_angularVelocity;

@@ -215,7 +215,6 @@ public:
 
 	/// Apply a torque. This affects the angular velocity
 	/// without affecting the linear velocity of the center of mass.
-	/// This wakes up the body.
 	/// @param torque about the z-axis (out of the screen), usually in N-m.
 	/// @param wake also wake up the body
 	void ApplyTorque(float32 torque, bool wake);
@@ -228,7 +227,7 @@ public:
 	/// @param wake also wake up the body
 	void ApplyLinearImpulse(const b2Vec2& impulse, const b2Vec2& point, bool wake);
 
-	/// Apply an impulse to the center of mass. This wakes up the body.
+	/// Apply an impulse to the center of mass. This immediately modifies the velocity.
 	/// @param impulse the world impulse vector, usually in N-seconds or kg-m/s.
 	/// @param wake also wake up the body
 	void ApplyLinearImpulseToCenter(const b2Vec2& impulse, bool wake);

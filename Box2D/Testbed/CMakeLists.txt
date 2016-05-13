@@ -104,3 +104,6 @@ add_executable(Testbed
 )
 
 target_link_libraries(Testbed Box2D glfw ${GLFW_LIBRARIES})
+
+file(COPY Data DESTINATION .)
+

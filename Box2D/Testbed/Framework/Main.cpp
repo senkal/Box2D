@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2013 Erin Catto http://www.box2d.org
+* Copyright (c) 2006-2016 Erin Catto http://www.box2d.org
 *
 * This software is provided 'as-is', without any express or implied
 * warranty.  In no event will the authors be held liable for any damages
@@ -31,6 +31,11 @@
 #define snprintf _snprintf
 #endif
 
+// This include was added to support MinGW
+#ifdef _WIN32
+#include <crtdbg.h>
+#endif
+
 //
 struct UIState
 {
@@ -54,9 +59,26 @@ namespace
 }
 
 //
-static void sCreateUI()
+static void sCreateUI(GLFWwindow* window)
 {
 	ui.showMenu = true;
+
+	// Init UI
+	const char* fontPath = "Data/DroidSans.ttf";
+	ImGui::GetIO().Fonts->AddFontFromFileTTF(fontPath, 15.f);
+
+	if (ImGui_ImplGlfw_Init(window, false) == false)
+	{
+		fprintf(stderr, "Could not init GUI renderer.\n");
+		assert(false);
+		return;
+	}
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.FrameRounding = style.GrabRounding = style.ScrollbarRounding = 2.0f;
+	style.FramePadding = ImVec2(4, 2);
+	style.DisplayWindowPadding = ImVec2(0, 0);
+	style.DisplaySafeAreaPadding = ImVec2(0, 0);
 }
 
 //
@@ -70,6 +92,9 @@ static void sResizeWindow(GLFWwindow*, int width, int height)
 static void sKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	ImGui_ImplGlFw_KeyCallback(window, key, scancode, action, mods);
+	bool keys_for_ui = ImGui::GetIO().WantCaptureKeyboard;
+	if (keys_for_ui)
+		return;
 
 	if (action == GLFW_PRESS)
 	{
@@ -203,6 +228,12 @@ static void sKeyCallback(GLFWwindow* window, int key, int scancode, int action, 
 }
 
 //
+static void sCharCallback(GLFWwindow* window, unsigned int c)
+{
+	ImGui_ImplGlfw_CharCallback(window, c);
+}
+
+//
 static void sMouseButton(GLFWwindow* window, int32 button, int32 action, int32 mods)
 {
 	ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
@@ -270,8 +301,9 @@ static void sMouseMotion(GLFWwindow*, double xd, double yd)
 static void sScrollCallback(GLFWwindow* window, double dx, double dy)
 {
 	ImGui_ImplGlfw_ScrollCallback(window, dx, dy);
+	bool mouse_for_ui = ImGui::GetIO().WantCaptureMouse;
 
-	if (!ImGui::GetIO().WantCaptureMouse)
+	if (!mouse_for_ui)
 	{
 		if (dy > 0)
 		{
@@ -295,11 +327,11 @@ static void sRestart()
 //
 static void sSimulate()
 {
-	ImGui::SetNextWindowPos(ImVec2(10, 10));
-	ImGui::Begin("Test", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::Text("%s", entry->name);
+	glEnable(GL_DEPTH_TEST);
 	test->Step(&settings);
-	ImGui::End();
+
+	test->DrawTitle(entry->name);
+	glDisable(GL_DEPTH_TEST);
 
 	if (testSelection != testIndex)
 	{
@@ -312,9 +344,10 @@ static void sSimulate()
 	}
 }
 
-static bool test_combo_getter(void* data, int idx, const char** out_text)
+//
+static bool sTestEntriesGetName(void*, int idx, const char** out_name)
 {
-	*out_text = g_testEntries[idx].name;
+	*out_name = g_testEntries[idx].name;
 	return true;
 }
 
@@ -324,23 +357,30 @@ static void sInterface()
 	int menuWidth = 200;
 	if (ui.showMenu)
 	{
-        ImGui::SetNextWindowPos(ImVec2(g_camera.m_width - menuWidth - 10, 10), ImGuiSetCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(menuWidth, g_camera.m_height - 20), ImGuiSetCond_FirstUseEver);
-		if (ImGui::Begin("Testbed Controls", &ui.showMenu, ImGuiWindowFlags_NoSavedSettings))
-		{
-		}
+		ImGui::SetNextWindowPos(ImVec2((float)g_camera.m_width - menuWidth - 10, 10));
+		ImGui::SetNextWindowSize(ImVec2((float)menuWidth, (float)g_camera.m_height - 20));
+		ImGui::Begin("Testbed Controls", &ui.showMenu, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoCollapse);
+		ImGui::PushAllowKeyboardFocus(false); // Disable TAB
 
-		if (ImGui::Combo("Test", &testSelection, test_combo_getter, NULL, testCount, -1))
-		{
-			testIndex = testSelection;
-			sRestart();
-		}
+		ImGui::PushItemWidth(-1.0f);
 
+		ImGui::Text("Test");
+		if (ImGui::Combo("##Test", &testIndex, sTestEntriesGetName, NULL, testCount, testCount))
+		{
+			delete test;
+			entry = g_testEntries + testIndex;
+			test = entry->createFcn();
+			testSelection = testIndex;
+		}
 		ImGui::Separator();
 
-		ImGui::SliderInt("Vel Iters", &settings.velocityIterations, 0, 50);
-		ImGui::SliderInt("Pos Iters", &settings.positionIterations, 0, 50);
-		ImGui::SliderFloat("Hertz", &settings.hz, 5.0f, 120.0f);
+		ImGui::Text("Vel Iters");
+		ImGui::SliderInt("##Vel Iters", &settings.velocityIterations, 0, 50);
+		ImGui::Text("Pos Iters");
+		ImGui::SliderInt("##Pos Iters", &settings.positionIterations, 0, 50);
+		ImGui::Text("Hertz");
+		ImGui::SliderFloat("##Hertz", &settings.hz, 5.0f, 120.0f, "%.0f hz");
+		ImGui::PopItemWidth();
 
 		ImGui::Checkbox("Sleep", &settings.enableSleep);
 		ImGui::Checkbox("Warm Starting", &settings.enableWarmStarting);
@@ -360,24 +400,28 @@ static void sInterface()
 		ImGui::Checkbox("Statistics", &settings.drawStats);
 		ImGui::Checkbox("Profile", &settings.drawProfile);
 
-		if (ImGui::Button("Pause"))
+		ImVec2 button_sz = ImVec2(-1, 0);
+		if (ImGui::Button("Pause (P)", button_sz))
 			settings.pause = !settings.pause;
 
-		if (ImGui::Button("Single Step"))
+		if (ImGui::Button("Single Step", button_sz))
 			settings.singleStep = !settings.singleStep;
 
-		if (ImGui::Button("Restart"))
+		if (ImGui::Button("Restart (R)", button_sz))
 			sRestart();
 
-		if (ImGui::Button("Quit"))
+		if (ImGui::Button("Quit", button_sz))
 			glfwSetWindowShouldClose(mainWindow, GL_TRUE);
 
+		ImGui::PopAllowKeyboardFocus();
 		ImGui::End();
 	}
+
+	//ImGui::ShowTestWindow(NULL);
 }
 
 //
-int main(int argc, char** argv)
+int main(int, char**)
 {
 #if defined(_WIN32)
 	// Enable memory-leak reports
@@ -416,16 +460,14 @@ int main(int argc, char** argv)
 	glfwSetScrollCallback(mainWindow, sScrollCallback);
 	glfwSetWindowSizeCallback(mainWindow, sResizeWindow);
 	glfwSetKeyCallback(mainWindow, sKeyCallback);
+	glfwSetCharCallback(mainWindow, sCharCallback);
 	glfwSetMouseButtonCallback(mainWindow, sMouseButton);
 	glfwSetCursorPosCallback(mainWindow, sMouseMotion);
 	glfwSetScrollCallback(mainWindow, sScrollCallback);
 
 	g_debugDraw.Create();
 
-	sCreateUI();
-
-	ImGui_ImplGlfw_Init(mainWindow, false);
-	ImGui_ImplGlfw_CreateDeviceObjects();
+	sCreateUI(mainWindow);
 
 	testCount = 0;
 	while (g_testEntries[testCount].createFcn != NULL)
@@ -455,6 +497,12 @@ int main(int argc, char** argv)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		ImGui_ImplGlfw_NewFrame();
+		ImGui::SetNextWindowPos(ImVec2(0,0));
+		ImGui::SetNextWindowSize(ImVec2((float)g_camera.m_width, (float)g_camera.m_height));
+		ImGui::Begin("Overlay", NULL, ImVec2(0,0), 0.0f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoInputs|ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoScrollbar);
+		ImGui::SetCursorPos(ImVec2(5, (float)g_camera.m_height - 20));
+		ImGui::Text("%.1f ms", 1000.0 * frameTime);
+		ImGui::End();
 
 		sSimulate();
 		sInterface();
@@ -465,13 +513,6 @@ int main(int argc, char** argv)
         frameTime = alpha * frameTime + (1.0 - alpha) * (time2 - time1);
         time1 = time2;
 
-        char buffer[32];
-        snprintf(buffer, 32, "%.1f ms", 1000.0 * frameTime);
-        ImGui::SetNextWindowPos(ImVec2(10, g_camera.m_height - 10 - 32));
-        ImGui::Begin("Rate", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings);
-        ImGui::Text("%s", buffer);
-        ImGui::End();
-        
 		ImGui::Render();
 
 		glfwSwapBuffers(mainWindow);
@@ -479,10 +520,14 @@ int main(int argc, char** argv)
 		glfwPollEvents();
 	}
 
-	delete test;
-	ImGui_ImplGlfw_InvalidateDeviceObjects();
-	ImGui_ImplGlfw_Shutdown();
+	if (test)
+	{
+		delete test;
+		test = nullptr;
+	}
+
 	g_debugDraw.Destroy();
+	ImGui_ImplGlfw_Shutdown();
 	glfwMakeContextCurrent(NULL);
 	glfwDestroyWindow(mainWindow); mainWindow = NULL;
 	glfwTerminate();

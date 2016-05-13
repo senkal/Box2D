@@ -734,40 +734,39 @@ void DebugDraw::DrawTransform(const b2Transform& xf)
 	m_lines->Vertex(p2, green);
 }
 
+//
 void DebugDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
 {
     m_points->Vertex(p, color, size);
 }
 
+//
 void DebugDraw::DrawString(int x, int y, const char *string, ...)
 {
-	char buffer[128];
-
 	va_list arg;
 	va_start(arg, string);
-	vsprintf(buffer, string, arg);
+	ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
+	ImGui::SetCursorPos(ImVec2(float(x), float(y)));
+	ImGui::TextColoredV(ImColor(230, 153, 153, 255), string, arg);
+	ImGui::End();
 	va_end(arg);
-
-	ImGui::TextColored(ImColor(230,153,153), "%s", buffer);
 }
 
+//
 void DebugDraw::DrawString(const b2Vec2& pw, const char *string, ...)
 {
 	b2Vec2 ps = g_camera.ConvertWorldToScreen(pw);
 
-	char buffer[128];
-
 	va_list arg;
 	va_start(arg, string);
-	vsprintf(buffer, string, arg);
+	ImGui::Begin("Overlay", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
+	ImGui::SetCursorPos(ImVec2(ps.x, ps.y));
+	ImGui::TextColoredV(ImColor(230, 153, 153, 255), string, arg);
+	ImGui::End();
 	va_end(arg);
-
-    ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    draw_list->PushClipRectFullScreen();
-    draw_list->AddText(ImVec2(ps.x, ps.y - ImGui::GetWindowFontSize()), ImColor(230,153,153), buffer);
-    draw_list->PopClipRect();
 }
 
+//
 void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 {
     b2Vec2 p1 = aabb->lowerBound;

@@ -12,7 +12,7 @@ To run the demos, set "Testbed" as your startup project and press F5. Some test 
 - 'x' and 'z' to zoom in/out
 - use the mouse to click and drag objects
 
-The main Box2D library is open source, but not open contribution. Please do not submit pull requests. Exceptions may be considered for build files and other items that are not part of the main library source. Thank you for your understanding.
+Please do not submit pull requests with new features. Instead, please file an issue first for discussion. For bugs, I prefer detailed bug reports over pull requests.
 
 Erin Catto
 http://www.box2d.org
