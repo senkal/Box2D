@@ -1,3 +1,17 @@
+##Not for Linux Building, based on https://github.com/erincatto/Box2D/issues/387
+1. git clone https://github.com/senkal/Box2D.git
+2. cd Box2D
+3. git submodule init
+4. git submodule update --recursive
+5. mkdir BuildLinux
+6. cd BuildLinux
+7. cmake ..
+8. make
+
+To run Tests: `Testbed/Testbed` inside BuildLinux
+
+
+
 ##About
 Box2D is a 2D physics engine for games.
 
