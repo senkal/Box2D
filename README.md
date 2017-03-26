@@ -1,4 +1,4 @@
-### Personal note for Linux building, based on [original issue #37](https://github.com/erincatto/Box2D/issues/387)
+# Personal note for Linux building, based on [original issue #37](https://github.com/erincatto/Box2D/issues/387)
 1. git clone https://github.com/senkal/Box2D.git
 2. cd Box2D
 3. git submodule init
@@ -11,7 +11,7 @@
 To run Tests: `Testbed/Testbed` inside BuildLinux
 
 
-### Original Readme
+# Original Readme
 
 ## About
 Box2D is a 2D physics engine for games.
