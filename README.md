@@ -1,4 +1,4 @@
-# Personal note for Linux building, based on [original issue #37](https://github.com/erincatto/Box2D/issues/387)
+# Linux building, based on [original issue #37](https://github.com/erincatto/Box2D/issues/387)
 1. git clone https://github.com/senkal/Box2D.git
 2. cd Box2D
 3. git submodule init
